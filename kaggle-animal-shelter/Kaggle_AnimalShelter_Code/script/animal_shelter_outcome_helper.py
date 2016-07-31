@@ -35,7 +35,6 @@ def calculateAge(val: str):
     if multuplier == 0 :
         print("EXCEPTION cant find multiplier")
 
-    print(number*multuplier)
     return number*multuplier
 
 def setMissingAge(row):
@@ -47,45 +46,60 @@ def processName(val):
     return val
 
 
-def encodeFeature(df, featureID):
-    le = preprocessing.LabelEncoder()
-    if len(df[featureID][df[featureID].isnull()]) > 0:
-        df.loc[(df[featureID].isnull()), featureID] = 'UNKNOWN'
-    df[featureID] = le.fit_transform(df[featureID])
-    return le
+def encodeFeature(df,testData, featureID,le = preprocessing.LabelEncoder()):
+    if len(testData[featureID][testData[featureID].isnull()]) > 0:
+        testData.loc[(testData[featureID].isnull()), featureID] = 'UNKNOWN'
 
-def encodeFeature(df, featureID,le = preprocessing.LabelEncoder()):
     if len(df[featureID][df[featureID].isnull()]) > 0:
         df.loc[(df[featureID].isnull()), featureID] = 'UNKNOWN'
-    df[featureID] = le.fit_transform(df[featureID])
+
+
+    le.fit_transform(testData[featureID].append(df[featureID]))
+
+    df[featureID] = le.transform(df[featureID])
+    testData[featureID] = le.transform(testData[featureID])
     return le
 
 
 def dataset_transformation(df : pd.DataFrame, testData : pd.DataFrame):
+
+    #Age Transform
     df['AgeuponOutcome'] =  df['AgeuponOutcome'].apply(calculateAge)
     testData['AgeuponOutcome'] = testData['AgeuponOutcome'].apply(calculateAge)
 
+    #name transform
     df['Name'] = df['Name'].apply(processName)
     testData['Name'] = testData['Name'].apply(processName)
 
     #df = df.apply(setMissingAge, axis=1)
     #testData = testData.apply(setMissingAge, axis=1)
 
-    le =  encodeFeature(df,'OutcomeType')
-    encodeFeature(df,'OutcomeSubtype')
-    encodeFeature(df,'AnimalType')
-    encodeFeature(df,'SexuponOutcome')
-    encodeFeature(df,'Breed')
-    encodeFeature(df,'Color')
+    #encodeFeature(df,'OutcomeType')
+
+    #Animal Tpye transform
+    le = encodeFeature(df,testData,'AnimalType')
+
+
+    #sex transform
+    le =  encodeFeature(df,testData,'SexuponOutcome')
+
+    #Breed transform
+    le = encodeFeature(df,testData,'Breed')
+
+    #color.
+    le = encodeFeature(df,testData,'Color')
+
+
     #encodeFeature(df,'Breed1')
     #encodeFeature(df,'Breed2')
     #encodeFeature(df,'Breedcount')
     #encodeFeature(df,'Name')
 
     df =  df.drop(['DateTime'], axis=1)
-    df = df.drop(['Breed'], axis=1)
+    testData = testData.drop(['DateTime'], axis=1)
 
-    dog_median_age = df.query('AnimalType == "Dog"')['AgeuponOutcome'].dropna().mean()
-    cat_median_age = df.query('AnimalType == "Cat"')['AgeuponOutcome'].dropna().mean()
+    df = df.drop(['Name'], axis=1)
+    testData = testData.drop(['Name'], axis=1)
 
-    return df
+
+    return [df,testData]
