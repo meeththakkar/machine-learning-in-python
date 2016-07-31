@@ -49,7 +49,7 @@ print(data_test.isnull().values.any())
 print(X_all.head(10))
 
 
-num_test = 0.10
+num_test = 0.001
 X_train, X_test, y_train, y_test = train_test_split(X_all, y_all, test_size=num_test, random_state=23)
 
 

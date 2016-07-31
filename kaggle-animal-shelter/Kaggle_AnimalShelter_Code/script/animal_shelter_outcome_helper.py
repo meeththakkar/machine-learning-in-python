@@ -82,12 +82,18 @@ def dataset_transformation(df : pd.DataFrame, testData : pd.DataFrame):
 
     #sex transform
     le =  encodeFeature(df,testData,'SexuponOutcome')
+    le =  encodeFeature(df,testData,'SexuponOutcome1')
+
 
     #Breed transform
     le = encodeFeature(df,testData,'Breed')
+    le = encodeFeature(df, testData, 'Breed1')
+    le = encodeFeature(df, testData, 'Breed2')
 
     #color.
     le = encodeFeature(df,testData,'Color')
+    le = encodeFeature(df, testData, 'Color1')
+    le = encodeFeature(df, testData, 'Color2')
 
 
     #encodeFeature(df,'Breed1')
